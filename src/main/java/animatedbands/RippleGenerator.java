@@ -2,8 +2,6 @@ package animatedbands;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.util.Duration;
 
@@ -17,13 +15,7 @@ public class RippleGenerator extends Group {
     private double generatorCenterY = 100.0;
 
     private Timeline generate = new Timeline(
-            new KeyFrame(Duration.seconds(0.5), new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    createRipple();
-                }
-            }
-            )
+       new KeyFrame(Duration.seconds(0.5), event -> createRipple())
     );
 
     public RippleGenerator() {
@@ -36,13 +28,11 @@ public class RippleGenerator extends Group {
         ripple.animation.play();
 
         Timeline remover = new Timeline(
-                new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        getChildren().remove(ripple);
-                        ripple.animation.stop();
-                    }
-                })
+            new KeyFrame(Duration.seconds(3), actionEvent -> {
+                    getChildren().remove(ripple);
+                    ripple.animation.stop();
+                }
+            )
         );
         remover.play();
     }

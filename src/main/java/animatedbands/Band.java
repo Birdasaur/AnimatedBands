@@ -1,12 +1,10 @@
 package animatedbands;
 
-import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -17,6 +15,8 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.QuadCurveTo;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -48,31 +48,29 @@ public class Band extends Group {
         this.centerX = x;
         this.centerY = y;
         slopeVectors = calcSlopeVectors(doubles, magnitudeProperty.get());
-        magCL = new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
-                path.getElements().clear();
-                //tweak the points position based on the change in magnitude
-                double [] currentPoints = new double[slopeVectors.size()*2];
-                double changeX, changeY;
-                for(int i=0; i<slopeVectors.size();i++) {
-                    changeX = slopeVectors.get(i).getRun() * magnitudeProperty.get() 
-                        - slopeVectors.get(i).getRun();
-                    if(slopeVectors.get(i).getRun() < centerX)
-                        changeX *= -1;
-                    currentPoints[2*i] = slopeVectors.get(i).getRun() + changeX;
+        magCL = (ov, t, t1) -> {
+            path.getElements().clear();
+            //tweak the points position based on the change in magnitude
+            double [] currentPoints = new double[slopeVectors.size()*2];
+            double changeX, changeY;
+            for(int i=0; i<slopeVectors.size();i++) {
+                changeX = slopeVectors.get(i).getRun() * magnitudeProperty.get()
+                    - slopeVectors.get(i).getRun();
+                if(slopeVectors.get(i).getRun() < centerX)
+                    changeX *= -1;
+                currentPoints[2*i] = slopeVectors.get(i).getRun() + changeX;
 
-                    changeY = slopeVectors.get(i).getRise() * magnitudeProperty.get() 
-                        - slopeVectors.get(i).getRise();
-                    if(slopeVectors.get(i).getRise() < centerY)
-                        changeY *= -1;
-                    currentPoints[2*i+1] = slopeVectors.get(i).getRise() + changeY;
-                }
-                //System.out.println("Drifting First point: " + currentPoints[0] + ", " + currentPoints[1]);
-                //rebuild the path
-                updateQuadPath(currentPoints);
+                changeY = slopeVectors.get(i).getRise() * magnitudeProperty.get()
+                    - slopeVectors.get(i).getRise();
+                if(slopeVectors.get(i).getRise() < centerY)
+                    changeY *= -1;
+                currentPoints[2*i+1] = slopeVectors.get(i).getRise() + changeY;
             }
+            //System.out.println("Drifting First point: " + currentPoints[0] + ", " + currentPoints[1]);
+            //rebuild the path
+            updateQuadPath(currentPoints);
         };
+
         magnitudeProperty.addListener(magCL);
         animation = new Timeline(
             new KeyFrame(Duration.ZERO, new KeyValue(magnitudeProperty, 1.0)),

@@ -1,12 +1,11 @@
 package animatedbands;
 
-import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.util.Duration;
+
+import java.util.Random;
 
 /**
  *
@@ -25,12 +24,7 @@ public class BandGenerator extends Group {
     private double generatorCenterY = 100.0;
     
     private Timeline generate = new Timeline(
-        new KeyFrame(Duration.seconds(0.5), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                createQuadBand();
-            }
-        })
+        new KeyFrame(Duration.seconds(0.5), actionEvent -> createQuadBand())
     );
 
     public BandGenerator(int points, double initialRadius, double edgeVariation) {
@@ -74,12 +68,9 @@ public class BandGenerator extends Group {
         band.animation.play();
 
         Timeline remover = new Timeline(
-            new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
+            new KeyFrame(Duration.seconds(3), actionEvent -> {
                     getChildren().remove(band);
                     band.animation.stop();
-                }
             })
         );
         remover.play();
